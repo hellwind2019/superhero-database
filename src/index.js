@@ -1,6 +1,7 @@
 import express from "express";
 const hostname = "127.0.0.1";
-const port = 3000;
+
+const port = process.env.PORT || 4000;
 const server = express();
 export const tasks = [
   { id: 1, title: "Task One", completed: false },
@@ -25,6 +26,6 @@ server.post("/tasks", (req, res) => {
 //   }
 // });
 
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+server.listen(port, () => {
+  console.log(`Server running at port ${port}/`);
 });
