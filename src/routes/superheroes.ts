@@ -4,8 +4,13 @@ import pool from "../db/db.js";
 import multer from "multer";
 import { bucket } from "../firebase.js";
 const router = Router();
+import type { Request } from "express";
 
+export interface MulterRequest extends Request {
+  file?: Express.Multer.File;
+}
 router.get("/", async (req, res) => {
+  console.log("GET ALL");
   try {
     const result = await pool.query("SELECT * FROM superheroes ORDER BY id");
     res.json(result.rows);
@@ -14,7 +19,31 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: "Database error" });
   }
 });
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
 
+  // validate id is a number
+  const heroId = parseInt(id);
+  if (isNaN(heroId)) {
+    return res.status(400).json({ error: "Invalid hero ID" });
+  }
+
+  try {
+    const { rows } = await pool.query(
+      "SELECT * FROM superheroes WHERE id = $1",
+      [heroId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Hero not found" });
+    }
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 router.post("/", async (req, res) => {
   const { nickname, real_name, origin_description, superpowers, catch_phrase } =
     req.body;

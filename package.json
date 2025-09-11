@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist/index.js",
-    "build": "tsc "
+    "build": "npm i & tsc "
   },
   "repository": {
     "type": "git",
@@ -23,11 +23,11 @@
   },
   "homepage": "https://github.com/hellwind2019/superhero-database#readme",
   "dependencies": {
+    "@google-cloud/storage": "^7.17.1",
     "@types/express": "^5.0.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
-    "firebase": "^12.2.1",
     "firebase-admin": "^13.5.0",
     "helmet": "^8.1.0",
     "multer": "^2.0.2",
