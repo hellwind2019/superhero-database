@@ -1,0 +1,28 @@
+{
+  "name": "superhero-database",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Test Task for JavaScript Ninjas company ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hellwind2019/superhero-database.git"
+  },
+  "keywords": [
+    "idk"
+  ],
+  "author": "hellw1nd2019",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hellwind2019/superhero-database/issues"
+  },
+  "homepage": "https://github.com/hellwind2019/superhero-database#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10"
+  }
+}
