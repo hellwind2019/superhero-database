@@ -1,11 +1,18 @@
 import express from "express";
 import helmet from "helmet";
 import router from "./routes/superheroes.js";
-
+import cors from "cors";
 const HOST = process.env.HOST || "127.0.0.1";
-
 const PORT: number = Number(process.env.PORT) || 4000;
 const app = express();
+
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(
