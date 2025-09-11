@@ -2,9 +2,9 @@ import express from "express";
 import helmet from "helmet";
 import router from "./routes/superheroes.js";
 
-const hostname = "127.0.0.1";
+const HOST = process.env.HOST || "127.0.0.1";
 
-const port: number = Number(process.env.PORT) || 4000;
+const PORT: number = Number(process.env.PORT) || 4000;
 const app = express();
 
 app.use(express.json());
@@ -24,6 +24,6 @@ app.use(
 );
 app.use("/api/superheroes", router);
 
-app.listen(port, hostname, () => {
-  console.log(`Server running at port http://${hostname}:${port}/`);
+app.listen(PORT, HOST, () => {
+  console.log(`Server running at port http://${HOST}:${PORT}/`);
 });
