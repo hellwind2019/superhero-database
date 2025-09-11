@@ -13,4 +13,47 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.post("/", async (req, res) => {
+  const { nickname, real_name, origin_description, superpowers, catch_phrase } =
+    req.body;
+  try {
+    const result = await pool.query(
+      `INSERT INTO superheroes (nickname, real_name, origin_description, superpowers, catch_phrase)
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [nickname, real_name, origin_description, superpowers, catch_phrase]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: "Insert failed" });
+  }
+});
+router.delete("/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    await pool.query("DELETE FROM superheroes WHERE id = $1", [id]);
+    res.status(204).send();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Delete failed" });
+  }
+});
+router.put("/:id", async (req, res) => {
+  const id = req.params.id;
+  const { nickname, real_name, origin_description, superpowers, catch_phrase } =
+    req.body;
+  try {
+    const result = await pool.query(
+      `UPDATE superheroes
+       SET nickname=$1, real_name=$2, origin_description=$3, superpowers=$4, catch_phrase=$5
+       WHERE id=$6 RETURNING *`,
+      [nickname, real_name, origin_description, superpowers, catch_phrase, id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: "Update failed" });
+  }
+});
+
 export default router;
