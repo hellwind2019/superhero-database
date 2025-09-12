@@ -1,6 +1,5 @@
 import { Router } from "express";
 import pool from "../db/db.js";
-
 import multer from "multer";
 import { bucket } from "../firebase.js";
 const router = Router();
@@ -10,30 +9,35 @@ export interface MulterRequest extends Request {
   file?: Express.Multer.File;
 }
 router.get("/", async (req, res) => {
-  console.log("GET ALL");
   try {
-    const result = await pool.query("SELECT * FROM superheroes ORDER BY id");
+    const query = `
+      SELECT s.*,
+             (
+               SELECT url
+               FROM hero_images i
+               WHERE i.hero_id = s.id
+               ORDER BY i.id ASC
+               LIMIT 1
+             ) AS first_image
+      FROM superheroes s
+      ORDER BY s.id;
+    `;
+
+    const result = await pool.query(query);
     res.json(result.rows);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Database error" });
   }
 });
+
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
-
-  // validate id is a number
-  const heroId = parseInt(id);
-  if (isNaN(heroId)) {
-    return res.status(400).json({ error: "Invalid hero ID" });
-  }
-
   try {
     const { rows } = await pool.query(
       "SELECT * FROM superheroes WHERE id = $1",
-      [heroId]
+      [id]
     );
-
     if (rows.length === 0) {
       return res.status(404).json({ error: "Hero not found" });
     }
@@ -88,6 +92,31 @@ router.put("/:id", async (req, res) => {
 });
 
 const upload = multer({ storage: multer.memoryStorage() });
+
+router.post("/images", async (req, res) => {
+  try {
+    const { hero_id, image_url, caption } = req.body;
+
+    if (!hero_id || !image_url) {
+      return res
+        .status(400)
+        .json({ error: "hero_id and image_url are required" });
+    }
+
+    const query = `
+      INSERT INTO hero_images (hero_id, image_url, caption)
+      VALUES ($1, $2, $3)
+      RETURNING *;
+    `;
+    const values = [hero_id, image_url, caption || null];
+    const result = await pool.query(query, values);
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Database error" });
+  }
+});
 
 router.post("/:id/images", upload.single("image"), async (req, res) => {
   try {

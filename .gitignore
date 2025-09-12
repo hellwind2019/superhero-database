@@ -120,6 +120,8 @@ dist
 # Firebase cache directory
 .firebase/
 
+secrets
+
 # TernJS port file
 .tern-port
 
