@@ -91,8 +91,6 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-const upload = multer({ storage: multer.memoryStorage() });
-
 router.post("/images", async (req, res) => {
   try {
     const { hero_id, image_url, caption } = req.body;
@@ -115,31 +113,6 @@ router.post("/images", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Database error" });
-  }
-});
-
-router.post("/:id/images", upload.single("image"), async (req, res) => {
-  try {
-    const id = req.params.id;
-    if (!req.file) return res.status(400).send("No file uploaded");
-
-    // File name inside Firebase
-    const fileName = `superheroes/${id}/${Date.now()}_${req.file.originalname}`;
-    const file = bucket.file(fileName);
-
-    // Upload buffer to Firebase
-    await file.save(req.file.buffer, {
-      metadata: { contentType: req.file.mimetype },
-    });
-
-    // Make public (optional)
-    await file.makePublic();
-    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
-
-    res.json({ url: publicUrl });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error uploading image");
   }
 });
 

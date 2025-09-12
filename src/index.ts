@@ -30,7 +30,7 @@ app.use(
   })
 );
 app.use("/api/superheroes", router);
-
+app.use("api/image-upload");
 app.listen(PORT, HOST, () => {
   console.log(`Server running at port http://${HOST}:${PORT}/`);
 });
