@@ -91,29 +91,4 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.post("/images", async (req, res) => {
-  try {
-    const { hero_id, image_url, caption } = req.body;
-
-    if (!hero_id || !image_url) {
-      return res
-        .status(400)
-        .json({ error: "hero_id and image_url are required" });
-    }
-
-    const query = `
-      INSERT INTO hero_images (hero_id, image_url, caption)
-      VALUES ($1, $2, $3)
-      RETURNING *;
-    `;
-    const values = [hero_id, image_url, caption || null];
-    const result = await pool.query(query, values);
-
-    res.status(201).json(result.rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Database error" });
-  }
-});
-
 export default router;

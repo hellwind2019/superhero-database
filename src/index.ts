@@ -2,6 +2,7 @@ import express from "express";
 import helmet from "helmet";
 import router from "./routes/superheroes.js";
 import cors from "cors";
+import image_router from "./routes/images.js";
 const HOST = process.env.HOST || "127.0.0.1";
 const PORT: number = Number(process.env.PORT) || 4000;
 const app = express();
@@ -30,7 +31,7 @@ app.use(
   })
 );
 app.use("/api/superheroes", router);
-app.use("api/image-upload");
+app.use("/api/images", image_router);
 app.listen(PORT, HOST, () => {
   console.log(`Server running at port http://${HOST}:${PORT}/`);
 });
