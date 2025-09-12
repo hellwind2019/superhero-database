@@ -13,7 +13,7 @@ router.get("/", async (req, res) => {
     const query = `
       SELECT s.*,
              (
-               SELECT url
+               SELECT image_url
                FROM hero_images i
                WHERE i.hero_id = s.id
                ORDER BY i.id ASC
