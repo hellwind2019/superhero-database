@@ -33,27 +33,34 @@ export interface MulterRequest extends Request {
 }
 
 const upload = multer({ storage: multer.memoryStorage() });
-image_router.post("/upload", upload.single("image"), async (req, res) => {
+image_router.post("/upload", upload.array("images", 10), async (req, res) => {
   try {
-    if (!req.file) return res.status(400).send("No file uploaded");
+    if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
+      return res.status(400).send("No files uploaded");
+    }
 
-    // File name inside Firebase
-    const fileName = `superheroes/${Date.now()}_${req.file.originalname}`;
-    const file = bucket.file(fileName);
+    const uploadedUrls: string[] = [];
 
-    // Upload buffer to Firebase
-    await file.save(req.file.buffer, {
-      metadata: { contentType: req.file.mimetype },
-    });
+    for (const file of req.files) {
+      const f = file as Express.Multer.File;
 
-    // Make public (optional)
-    await file.makePublic();
-    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+      const fileName = `superheroes/${Date.now()}_${f.originalname}`;
+      const bucketFile = bucket.file(fileName);
 
-    res.json({ url: publicUrl });
+      await bucketFile.save(f.buffer, {
+        metadata: { contentType: f.mimetype },
+      });
+
+      await bucketFile.makePublic();
+      uploadedUrls.push(
+        `https://storage.googleapis.com/${bucket.name}/${fileName}`
+      );
+    }
+
+    res.json({ urls: uploadedUrls });
   } catch (err) {
     console.error(err);
-    res.status(500).send("Error uploading image");
+    res.status(500).send("Error uploading images");
   }
 });
 export default image_router;
