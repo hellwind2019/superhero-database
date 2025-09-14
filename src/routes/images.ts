@@ -16,7 +16,7 @@ image_router.get("/:id", async (req, res) => {
         .status(404)
         .json({ error: `Images not found for hero with id: ${id}` });
     }
-    res.json(rows[0]);
+    res.json(rows);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
