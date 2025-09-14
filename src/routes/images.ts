@@ -8,7 +8,7 @@ image_router.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const { rows } = await pool.query(
-      "SELECT * FROM hero_images WHERE id = $1",
+      "SELECT * FROM hero_images WHERE hero_id = $1",
       [id]
     );
     if (rows.length === 0) {
