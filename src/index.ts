@@ -9,7 +9,11 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:4173",
+      "https://hellwind2019.github.io",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -23,9 +27,10 @@ app.use(
         defaultSrc: ["'self'"],
         connectSrc: [
           "'self'",
-          "http://127.0.0.1:8000",
-          "ws://localhost:42877/",
+          "http://127.0.0.1:4000", // твій API
+          "ws://localhost:42877/", // Vite hot reload
         ],
+        imgSrc: ["'self'", "data:", "https://storage.googleapis.com"],
       },
     },
   })
