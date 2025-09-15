@@ -81,4 +81,42 @@ image_router.post("/upload", upload.array("images", 10), async (req, res) => {
     res.status(500).send("Error uploading images");
   }
 });
+image_router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // 1. Get image data from DB by id
+    const result = await pool.query("SELECT url FROM images WHERE id = $1", [
+      id,
+    ]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Image not found" });
+    }
+
+    const imageUrl = result.rows[0].url;
+
+    // 2. Extract filename from the URL
+    // Example URL: https://storage.googleapis.com/my-bucket/superheroes/169477383_image.png
+    const filePath = decodeURIComponent(
+      imageUrl.split(`https://storage.googleapis.com/${bucket.name}/`)[1]
+    );
+
+    if (!filePath) {
+      return res.status(400).json({ message: "Invalid image URL" });
+    }
+
+    // 3. Delete file from bucket
+    await bucket.file(filePath).delete();
+
+    // 4. Delete record from DB
+    await pool.query("DELETE FROM images WHERE id = $1", [id]);
+
+    res.json({ message: "Image deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting image:", err);
+    res.status(500).json({ message: "Error deleting image" });
+  }
+});
+
 export default image_router;
