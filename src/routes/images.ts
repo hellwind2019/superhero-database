@@ -86,9 +86,10 @@ image_router.delete("/:id", async (req, res) => {
 
   try {
     // 1. Get image data from DB by id
-    const result = await pool.query("SELECT url FROM images WHERE id = $1", [
-      id,
-    ]);
+    const result = await pool.query(
+      "SELECT image_url FROM hero_images WHERE id = $1",
+      [id]
+    );
 
     if (result.rows.length === 0) {
       return res.status(404).json({ message: "Image not found" });
@@ -110,7 +111,7 @@ image_router.delete("/:id", async (req, res) => {
     await bucket.file(filePath).delete();
 
     // 4. Delete record from DB
-    await pool.query("DELETE FROM images WHERE id = $1", [id]);
+    await pool.query("DELETE FROM hero_images WHERE id = $1", [id]);
 
     res.json({ message: "Image deleted successfully" });
   } catch (err) {
