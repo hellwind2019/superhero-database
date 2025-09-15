@@ -95,7 +95,7 @@ image_router.delete("/:id", async (req, res) => {
       return res.status(404).json({ message: "Image not found" });
     }
 
-    const imageUrl = result.rows[0].url;
+    const imageUrl = result.rows[0].image_url;
 
     // 2. Extract filename from the URL
     // Example URL: https://storage.googleapis.com/my-bucket/superheroes/169477383_image.png
@@ -107,7 +107,7 @@ image_router.delete("/:id", async (req, res) => {
       return res.status(400).json({ message: "Invalid image URL" });
     }
 
-    // 3. Delete file from bucket
+    // 3. Delete file from bucke
     await bucket.file(filePath).delete();
 
     // 4. Delete record from DB
