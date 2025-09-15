@@ -11,11 +11,7 @@ image_router.get("/:id", async (req, res) => {
       "SELECT * FROM hero_images WHERE hero_id = $1",
       [id]
     );
-    if (rows.length === 0) {
-      return res
-        .status(404)
-        .json({ error: `Images not found for hero with id: ${id}` });
-    }
+
     res.json(rows);
   } catch (err) {
     console.error(err);
@@ -90,15 +86,11 @@ image_router.delete("/:id", async (req, res) => {
       "SELECT image_url FROM hero_images WHERE id = $1",
       [id]
     );
-
     if (result.rows.length === 0) {
       return res.status(404).json({ message: "Image not found" });
     }
 
     const imageUrl = result.rows[0].image_url;
-
-    // 2. Extract filename from the URL
-    // Example URL: https://storage.googleapis.com/my-bucket/superheroes/169477383_image.png
     const filePath = decodeURIComponent(
       imageUrl.split(`https://storage.googleapis.com/${bucket.name}/`)[1]
     );
@@ -107,10 +99,7 @@ image_router.delete("/:id", async (req, res) => {
       return res.status(400).json({ message: "Invalid image URL" });
     }
 
-    // 3. Delete file from bucke
     await bucket.file(filePath).delete();
-
-    // 4. Delete record from DB
     await pool.query("DELETE FROM hero_images WHERE id = $1", [id]);
 
     res.json({ message: "Image deleted successfully" });

@@ -66,11 +66,33 @@ router.post("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   const id = req.params.id;
   try {
+    await pool.query("BEGIN");
+    const images = await pool.query(
+      "SELECT image_url FROM hero_images WHERE hero_id = $1",
+      [id]
+    );
+    for (const row of images.rows) {
+      const filePath = decodeURIComponent(
+        row.image_url.split(`https://storage.googleapis.com/${bucket.name}/`)[1]
+      );
+      if (filePath) {
+        try {
+          await bucket.file(filePath).delete();
+        } catch (err) {
+          console.warn(`Не вдалося видалити файл ${filePath}:`, err);
+        }
+      }
+    }
+
+    await pool.query("DELETE FROM hero_images WHERE hero_id = $1", [id]);
     await pool.query("DELETE FROM superheroes WHERE id = $1", [id]);
-    res.status(204).send();
+    await pool.query("COMMIT");
+
+    res.json({ message: "Hero and images deleted successfully" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Delete failed" });
+    await pool.query("ROLLBACK");
+    console.error("Error deleting hero:", err);
+    res.status(500).json({ message: "Error deleting hero" });
   }
 });
 router.put("/:id", async (req, res) => {
