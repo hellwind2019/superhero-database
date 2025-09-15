@@ -29,6 +29,31 @@ This is the backend for the Superhero Database project. It is built with Node.js
    ```sh
    npm run dev
    ```
+## Database Schema
 
+### Table: `hero_images`
 
+| Column     | Type    | Description                |
+|------------|---------|----------------------------|
+| id         | SERIAL  | Primary key                |
+| hero_id    | INT     | References hero (required) |
+| image_url  | TEXT    | URL to the image           |
+| caption    | TEXT    | Optional image caption     |
+
+### Table: `superheroes`
+
+| Column              | Type    | Description                        |
+|---------------------|---------|------------------------------------|
+| id                  | SERIAL  | Primary key                        |
+| nickname            | TEXT    | Superhero nickname (required)      |
+| real_name           | TEXT    | Real name of the superhero         |
+| origin_description  | TEXT    | Description of origin              |
+| superpowers         | TEXT    | List or description of superpowers |
+| catch_phrase        | TEXT    | Catch phrase                       |
+
+## Assumptions
+
+- The PostgreSQL database and tables (`hero_images`, `superheroes`) are already created and accessible.
+- The `.env` file contains valid credentials for both PostgreSQL and Firebase.
+- The ServiceAccound .json file is provided.
 
